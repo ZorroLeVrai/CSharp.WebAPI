@@ -1,0 +1,54 @@
+﻿@page "/"
+@using System.Net.Http.Json
+@inject IHttpClientFactory factory
+@inject TokenModel tokenInfo
+
+<PageTitle>Index</PageTitle>
+
+@if (isLoggedIn)
+{
+    <h1>You are logged in</h1>
+    <button class="btn btn-danger" @onclick="LogOut">Log Out</button>
+}
+else
+{
+    <h1>Please Log In</h1>
+
+    <EditForm Model="login" OnValidSubmit="HandleValidSubmit">
+        <InputText @bind-Value="login.UserName" />
+        <InputText type="password" @bind-Value="login.Password" />
+
+        <button class="btn btn-success" type="submit">Log In</button>
+    </EditForm>
+}
+
+
+@code {
+    private AuthenticationModel login = new();
+    private bool isLoggedIn = false;
+
+    protected override void OnInitialized()
+    {
+        //we have to wait until the page is initialized to get the Token value
+        isLoggedIn = !string.IsNullOrWhiteSpace(tokenInfo.Token);
+    }
+
+    private async void HandleValidSubmit()
+    {
+        var client = factory.CreateClient("api");
+
+        //authenticate to get the Token
+        var info = await client.PostAsJsonAsync<AuthenticationModel>("Authentication/token", login);
+        //authenticate to get the Token by sending a Post request
+        tokenInfo.Token = await info.Content.ReadAsStringAsync();
+        isLoggedIn = true;
+        //Specifies thaht we should redraw the page
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void LogOut()
+    {
+        tokenInfo.Token = string.Empty;
+        isLoggedIn = false;
+    }
+}

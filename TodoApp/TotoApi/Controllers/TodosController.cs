@@ -26,7 +26,7 @@ public class TodosController : ControllerBase
     }
 
     // GET: api/Todos
-    [HttpGet]
+    [HttpGet(Name = "GetAllTodos")]
     public async Task<ActionResult<List<TodoModel>>> Get()
     {
         _logger.LogInformation("GET: api/Todos");
@@ -44,7 +44,7 @@ public class TodosController : ControllerBase
     }
 
     // GET api/Todos/5
-    [HttpGet("{todoId}")]
+    [HttpGet("{todoId}", Name = "GetOneTodo")]
     public async Task<ActionResult<TodoModel>> Get(int todoId)
     {
         _logger.LogInformation("GET: api/Todos/{TodoId}", todoId);
@@ -64,7 +64,7 @@ public class TodosController : ControllerBase
     }
 
     // POST api/Todos
-    [HttpPost]
+    [HttpPost(Name ="CreateTodo")]
     public async Task<ActionResult<TodoModel?>> Post([FromBody] string task)
     {
         var output = await _data.Create(GetUserId(), task);
@@ -73,7 +73,7 @@ public class TodosController : ControllerBase
     }
 
     // PUT api/Todos/5
-    [HttpPut("{todoId}")]
+    [HttpPut("{todoId}", Name="UpdateTodoTask")]
     public async Task<ActionResult> Put(int todoId, [FromBody] string task)
     {
         await _data.UpdateTask(GetUserId(), todoId, task);
@@ -82,7 +82,7 @@ public class TodosController : ControllerBase
     }
 
     // PUT api/Todos/5/Complete
-    [HttpPut("{todoId}/Complete")]
+    [HttpPut("{todoId}/Complete", Name ="CompleteTodo")]
     public async Task<IActionResult> Complete(int todoId)
     {
         await _data.CompleteTodo(GetUserId(), todoId);
@@ -91,7 +91,7 @@ public class TodosController : ControllerBase
     }
 
     // DELETE api/Todos/5
-    [HttpDelete("{todoId}")]
+    [HttpDelete("{todoId}", Name = "DeleteTodo")]
     public async Task<IActionResult> Delete(int todoId)
     {
         await _data.Delete(GetUserId(), todoId);
